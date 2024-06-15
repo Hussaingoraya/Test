@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Quiz</title>
+  <style>
+    .option-button {
+      cursor: pointer;
+      padding: 10px;
+      border: 1px solid #007bff;
+      margin: 5px;
+    }
+    .option-button.active {
+      background-color: #007bff;
+      color: white;
+    }
+    .next-button {
+      padding: 10px 20px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    .next-button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container quiz-contain">
+  <div class="quiz-header">
+    <h4>MDCAT PRACTICE</h4>
+    <p id="question-counter"></p>
+  </div>
+  <div class="quiz-data">
+    <p id="question-text"></p>
+    <div class="options" id="options-container"></div>
+    <button id="next-button" class="next-button" disabled>NEXT</button>
+  </div>
+</div>
+
+<script>
+  const mdcatQuestions = [
+    {
+      question: "What is the capital of France?",
+      options: ["Berlin", "Madrid", "Paris", "Lisbon"],
+      correctAnswer: 2
+    },
+    {
+      question: "Which planet is known as the Red Planet?",
+      options: ["Earth", "Mars", "Jupiter", "Saturn"],
+      correctAnswer: 1
+    },
+    // Add more questions as needed
+  ];
+
+  let currentQuestion = 0;
+  let selectedOption = null;
+  let correctAnswersCount = 0;
+
+  const questionCounter = document.getElementById('question-counter');
+  const questionText = document.getElementById('question-text');
+  const optionsContainer = document.getElementById('options-container');
+  const nextButton = document.getElementById('next-button');
+
+  function loadQuestion() {
+    if (currentQuestion >= mdcatQuestions.length) {
+      document.querySelector('.quiz-contain').innerHTML = `
+        <h2>Task Completed</h2>
+        <p>Total Questions: ${mdcatQuestions.length}</p>
+        <p>Correct Answers: ${correctAnswersCount}</p>
+      `;
+      return;
+    }
+
+    const currentData = mdcatQuestions[currentQuestion];
+    questionCounter.textContent = `${currentQuestion + 1} of ${mdcatQuestions.length}`;
+    questionText.textContent = currentData.question;
+
+    optionsContainer.innerHTML = '';
+    currentData.options.forEach((option, index) => {
+      const optionButton = document.createElement('div');
+      optionButton.className = 'option-button';
+      optionButton.textContent = option;
+      optionButton.onclick = () => handleOptionSelect(index);
+      optionsContainer.appendChild(optionButton);
+    });
+
+    nextButton.disabled = true;
+    selectedOption = null;
+  }
+
+  function handleOptionSelect(index) {
+    selectedOption = index;
+    document.querySelectorAll('.option-button').forEach((button, idx) => {
+      button.classList.toggle('active', idx === index);
+    });
+    nextButton.disabled = false;
+  }
+
+  nextButton.onclick = () => {
+    if (selectedOption !== null) {
+      if (selectedOption === mdcatQuestions[currentQuestion].correctAnswer) {
+        correctAnswersCount++;
+      }
+      currentQuestion++;
+      loadQuestion();
+    }
+  };
+
+  loadQuestion();
+</script>
+
+</body>
+</html>
